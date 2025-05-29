@@ -1,5 +1,4 @@
 const { OpenAI } = require('openai');
-require('dotenv').config();
 
 class PerplexityService {
     constructor() {
