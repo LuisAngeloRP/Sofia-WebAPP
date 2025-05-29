@@ -129,13 +129,12 @@ ESTILO DE COMUNICACIÓN:
         if (financialData && (financialData.income?.length > 0 || financialData.expenses?.length > 0)) {
             prompt += `\n\nSu situación financiera actual:`;
             
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            let totalIncome = 0;
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            let totalExpenses = 0;
+            let incomeData = null;
+            let expenseData = null;
             
             if (financialData.income?.length > 0) {
-                totalIncome = financialData.income.reduce((sum, item) => sum + item.amount, 0);
+                const totalIncome = financialData.income.reduce((sum, item) => sum + item.amount, 0);
+                incomeData = { total: totalIncome, count: financialData.income.length };
                 prompt += `\n- Ingresos registrados: S/${totalIncome.toLocaleString()} (${financialData.income.length} transacciones)`;
                 
                 const recentIncome = financialData.income.slice(-2);
@@ -146,7 +145,8 @@ ESTILO DE COMUNICACIÓN:
             }
             
             if (financialData.expenses?.length > 0) {
-                totalExpenses = financialData.expenses.reduce((sum, item) => sum + item.amount, 0);
+                const totalExpenses = financialData.expenses.reduce((sum, item) => sum + item.amount, 0);
+                expenseData = { total: totalExpenses, count: financialData.expenses.length };
                 prompt += `\n- Gastos registrados: S/${totalExpenses.toLocaleString()} (${financialData.expenses.length} transacciones)`;
                 
                 const recentExpenses = financialData.expenses.slice(-2);
@@ -157,8 +157,8 @@ ESTILO DE COMUNICACIÓN:
             }
             
             // Calculate balance if both income and expenses exist
-            if (financialData.income?.length > 0 && financialData.expenses?.length > 0) {
-                const balance = totalIncome - totalExpenses;
+            if (incomeData && expenseData) {
+                const balance = incomeData.total - expenseData.total;
                 prompt += `\n- Balance actual: S/${balance.toLocaleString()}`;
             }
         }
