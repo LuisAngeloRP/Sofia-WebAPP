@@ -291,7 +291,7 @@ Genera un análisis conversacional completo, no un reporte técnico.`;
     }
 
     getBasicAnalysis(financialData, userName) {
-        const { totalIncome, totalExpenses, balance } = financialData;
+        const { balance } = financialData;
         
         if (balance > 0) {
             return `¡Excelente ${userName}! 🎉 Tienes un balance positivo de S/${balance.toLocaleString()}. Con IA avanzada podría darte consejos específicos de inversión basados en condiciones actuales del mercado 📈`;
