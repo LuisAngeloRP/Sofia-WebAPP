@@ -1,7 +1,6 @@
-const { format, parseISO, isToday, isThisWeek, isThisMonth } = require('date-fns');
-const { v4: uuidv4 } = require('uuid');
-const PerplexityService = require('../services/PerplexityService');
-const ImageRecognitionService = require('../services/ImageRecognitionService');
+import { v4 as uuidv4 } from 'uuid';
+import PerplexityService from '../services/PerplexityService';
+import ImageRecognitionService from '../services/ImageRecognitionService';
 
 class FinanceAgent {
     constructor(memory, apiKey = null) {
@@ -38,7 +37,7 @@ class FinanceAgent {
             }
 
             // Generar respuesta con Perplexity
-            const response = await this.generatePerplexityResponse(userMessage, context, userId);
+            const response = await this.generatePerplexityResponse(userMessage, context);
             
             // Procesar información financiera si la hay
             await this.processFinancialInfo(userMessage, userId);
@@ -51,7 +50,7 @@ class FinanceAgent {
         }
     }
 
-    async generatePerplexityResponse(userMessage, context, userId) {
+    async generatePerplexityResponse(userMessage, context) {
         try {
             const systemPrompt = this.buildSofiaSystemPrompt(context);
             const userPrompt = this.buildSofiaUserPrompt(userMessage, context);
@@ -142,7 +141,7 @@ class FinanceAgent {
         }
     }
 
-    async getAIDecision(userMessage, context, userId) {
+    async getAIDecision(userMessage, context) {
         if (this.perplexity.useLocalMode) {
             return { actions: [], response: "Modo local activo" };
         }
@@ -329,7 +328,7 @@ Analiza todo de forma inteligente y natural - NO uses patrones rígidos.`;
         };
     }
 
-    async getAIErrorResponse(userMessage, context) {
+    async getAIErrorResponse(userMessage) {
         // Incluso los errores son manejados por IA si es posible
         if (this.perplexity.useLocalMode) {
             return "Disculpa, tuve un problema técnico 😅 ¿Podrías repetir lo que me dijiste?";
@@ -355,6 +354,7 @@ Hubo un error técnico procesando su mensaje. Genera una respuesta natural y emp
             return response.choices[0].message.content;
 
         } catch (error) {
+            console.error('Error en respuesta de error IA:', error);
             return "Ay, perdón! Tuve un problemita técnico 😅 ¿Me repites qué me decías?";
         }
     }
@@ -662,4 +662,4 @@ Estoy aquí para ayudarte con tus finanzas de manera súper natural y práctica.
     }
 }
 
-module.exports = FinanceAgent; 
+export default FinanceAgent; 

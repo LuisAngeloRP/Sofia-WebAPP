@@ -1,4 +1,4 @@
-const { format } = require('date-fns');
+import { format } from 'date-fns';
 
 class ConversationMemoryClient {
     constructor(maxContextMessages = 10) {
@@ -295,4 +295,4 @@ class ConversationMemoryClient {
     }
 }
 
-module.exports = ConversationMemoryClient; 
+export default ConversationMemoryClient; 

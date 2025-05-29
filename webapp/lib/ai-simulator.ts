@@ -3,8 +3,34 @@ import { v4 as uuidv4 } from 'uuid';
 import { ChatMessage, ClientPersona, ConversationState } from './types/chat';
 
 // Usar la versión client-compatible que no depende de fs
-const ConversationMemory = require('./memory/ConversationMemoryClient');
-const FinanceAgent = require('./agent/FinanceAgent');
+import ConversationMemory from './memory/ConversationMemoryClient';
+import FinanceAgent from './agent/FinanceAgent';
+
+interface StatsData {
+  nameDetected: boolean;
+  incomeDetected: number;
+  expensesDetected: number;
+  transactions?: Array<{
+    type: 'income' | 'expense';
+    amount: number;
+    source?: string;
+    category?: string;
+  }>;
+}
+
+interface IncomeData {
+  amount: number;
+  source: string;
+  currency?: string;
+  date?: string;
+}
+
+interface ExpenseData {
+  amount: number;
+  category: string;
+  currency?: string;
+  date?: string;
+}
 
 export class AIClientSimulator {
   private client?: OpenAI;
@@ -319,20 +345,23 @@ Objetivo actual: ${this.getIntentDescription(intent)}`;
 }
 
 export class AIConversationSimulator {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private memory: any;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private agent: any;
   private aiClient: AIClientSimulator;
   private userId: string;
   private isRunning: boolean;
   private isPaused: boolean;
   private onMessageCallback?: (message: ChatMessage) => void;
-  private onStatsCallback?: (stats: any) => void;
+  private onStatsCallback?: (stats: StatsData) => void;
   private apiKey: string;
 
   constructor(apiKey: string) {
     this.apiKey = apiKey;
     this.memory = new ConversationMemory(10);
-    this.agent = new FinanceAgent(this.memory, apiKey);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.agent = new FinanceAgent(this.memory, apiKey as any);
     this.aiClient = new AIClientSimulator(apiKey);
     this.userId = 'ai_client_' + Date.now();
     this.isRunning = false;
@@ -343,7 +372,7 @@ export class AIConversationSimulator {
     this.onMessageCallback = callback;
   }
 
-  onStats(callback: (stats: any) => void): void {
+  onStats(callback: (stats: StatsData) => void): void {
     this.onStatsCallback = callback;
   }
 
@@ -384,7 +413,8 @@ export class AIConversationSimulator {
     this.stop();
     this.aiClient.reset();
     this.memory = new ConversationMemory(10);
-    this.agent = new FinanceAgent(this.memory, this.apiKey);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    this.agent = new FinanceAgent(this.memory, this.apiKey as any);
     this.userId = 'ai_client_' + Date.now();
   }
 
@@ -464,13 +494,13 @@ export class AIConversationSimulator {
       expensesDetected,
       nameDetected: !!userProfile.name,
       transactions: [
-        ...(userProfile.financial_data?.income || []).map((income: any) => ({
+        ...(userProfile.financial_data?.income || []).map((income: IncomeData) => ({
           ...income,
-          type: 'income'
+          type: 'income' as const
         })),
-        ...(userProfile.financial_data?.expenses || []).map((expense: any) => ({
+        ...(userProfile.financial_data?.expenses || []).map((expense: ExpenseData) => ({
           ...expense,
-          type: 'expense'
+          type: 'expense' as const
         }))
       ]
     };

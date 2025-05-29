@@ -1,4 +1,4 @@
-const { OpenAI } = require('openai');
+import { OpenAI } from 'openai';
 
 class PerplexityService {
     constructor() {
@@ -22,7 +22,7 @@ class PerplexityService {
         };
     }
 
-    async generateFinancialResponse(userMessage, context, userId) {
+    async generateFinancialResponse(userMessage, context) {
         if (this.useLocalMode) {
             return this.getFallbackResponse(userMessage, context);
         }
@@ -129,8 +129,13 @@ ESTILO DE COMUNICACIÓN:
         if (financialData && (financialData.income?.length > 0 || financialData.expenses?.length > 0)) {
             prompt += `\n\nSu situación financiera actual:`;
             
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            let totalIncome = 0;
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            let totalExpenses = 0;
+            
             if (financialData.income?.length > 0) {
-                const totalIncome = financialData.income.reduce((sum, item) => sum + item.amount, 0);
+                totalIncome = financialData.income.reduce((sum, item) => sum + item.amount, 0);
                 prompt += `\n- Ingresos registrados: S/${totalIncome.toLocaleString()} (${financialData.income.length} transacciones)`;
                 
                 const recentIncome = financialData.income.slice(-2);
@@ -141,7 +146,7 @@ ESTILO DE COMUNICACIÓN:
             }
             
             if (financialData.expenses?.length > 0) {
-                const totalExpenses = financialData.expenses.reduce((sum, item) => sum + item.amount, 0);
+                totalExpenses = financialData.expenses.reduce((sum, item) => sum + item.amount, 0);
                 prompt += `\n- Gastos registrados: S/${totalExpenses.toLocaleString()} (${financialData.expenses.length} transacciones)`;
                 
                 const recentExpenses = financialData.expenses.slice(-2);
@@ -149,6 +154,12 @@ ESTILO DE COMUNICACIÓN:
                     const currencySymbol = expense.currency === 'dolares' ? '$' : expense.currency === 'pesos' ? '$' : 'S/';
                     prompt += `\n  • ${currencySymbol}${expense.amount.toLocaleString()} en ${expense.category}`;
                 });
+            }
+            
+            // Calculate balance if both income and expenses exist
+            if (financialData.income?.length > 0 && financialData.expenses?.length > 0) {
+                const balance = totalIncome - totalExpenses;
+                prompt += `\n- Balance actual: S/${balance.toLocaleString()}`;
             }
         }
 
@@ -309,4 +320,4 @@ Genera un análisis conversacional completo, no un reporte técnico.`;
     }
 }
 
-module.exports = PerplexityService; 
+export default PerplexityService; 

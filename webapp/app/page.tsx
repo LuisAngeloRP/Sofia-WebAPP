@@ -19,6 +19,18 @@ import {
 import { AIConversationSimulator } from '../lib/ai-simulator';
 import { ChatMessage, ClientPersona, ConversationState } from '../lib/types/chat';
 
+interface StatsData {
+  nameDetected: boolean;
+  incomeDetected: number;
+  expensesDetected: number;
+  transactions?: Array<{
+    type: 'income' | 'expense';
+    amount: number;
+    source?: string;
+    category?: string;
+  }>;
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [simulator, setSimulator] = useState<AIConversationSimulator | null>(null);
@@ -29,7 +41,7 @@ export default function Home() {
     totalSteps: 8
   });
   const [persona, setPersona] = useState<ClientPersona | null>(null);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<StatsData | null>(null);
   const [apiKey, setApiKey] = useState('');
   const [showSettings, setShowSettings] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -306,7 +318,7 @@ export default function Home() {
               <div className="flex items-center justify-center h-full text-gray-500">
                 <div className="text-center">
                   <MessageCircle className="w-12 h-12 mx-auto mb-3 opacity-50" />
-                  <p>Presiona "Iniciar" para comenzar una conversación AI vs AI</p>
+                  <p>Presiona &quot;Iniciar&quot; para comenzar una conversación AI vs AI</p>
                 </div>
               </div>
             ) : (
@@ -436,7 +448,7 @@ export default function Home() {
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <h4 className="text-sm font-medium text-gray-700 mb-2">Transacciones Detectadas:</h4>
                   <div className="space-y-1 max-h-32 overflow-y-auto">
-                    {stats.transactions.map((transaction: any, index: number) => (
+                    {stats.transactions.map((transaction, index: number) => (
                       <div key={index} className="text-xs text-gray-600 flex items-center gap-1">
                         {transaction.type === 'income' ? (
                           <TrendingUp className="w-3 h-3 text-green-500" />

@@ -1,4 +1,4 @@
-const { OpenAI } = require('openai');
+import { OpenAI } from 'openai';
 
 class ImageRecognitionService {
     constructor() {
@@ -193,4 +193,4 @@ Puede ser que:
     }
 }
 
-module.exports = ImageRecognitionService; 
+export default ImageRecognitionService; 

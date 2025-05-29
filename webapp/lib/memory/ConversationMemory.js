@@ -1,6 +1,6 @@
-const fs = require('fs');
-const path = require('path');
-const { format } = require('date-fns');
+import fs from 'fs';
+import path from 'path';
+import { format } from 'date-fns';
 
 class ConversationMemory {
     constructor(maxContextMessages = 10) {
@@ -157,7 +157,6 @@ class ConversationMemory {
         // Buscar patrones en las conversaciones
         conversation.forEach(exchange => {
             const userMsg = exchange.user.toLowerCase();
-            const agentMsg = exchange.agent.toLowerCase();
             
             // Detectar menciones de ingresos
             if (userMsg.includes('ganè') || userMsg.includes('ingreso') || userMsg.includes('salario') || userMsg.includes('sueldo')) {
@@ -310,4 +309,4 @@ class ConversationMemory {
     }
 }
 
-module.exports = ConversationMemory; 
+export default ConversationMemory; 
